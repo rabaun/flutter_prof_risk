@@ -30,15 +30,15 @@ Future<void> main() async {
 
   // If the database file doesn't exist, create it.
   File dbFile =
-  await File(dbFolder.path + "\\sqlite3_library_windows_example\\db")
-      .create(recursive: true);
+      await File("${dbFolder.path}\\sqlite3_library_windows_example\\db")
+          .create(recursive: true);
 
   // Open the database file
   db = sqlite3.open(dbFile.path);
 
   // Create 'count' table if the table doesn't already exist
-  db.execute('CREATE TABLE IF NOT EXISTS '
-      'count (count_value INTEGER NOT NULL);');
+  db.execute(
+      'CREATE TABLE IF NOT EXISTS count1 (count_value INTEGER, colDate_value INTEGER) ;');
 
   runApp(MyApp());
 }
@@ -66,27 +66,47 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  var _counter = 0;
+  var _colDate = 0;
+  TextEditingController descriptionController = TextEditingController();
 
   void _incrementCounter() {
     setState(() => _counter++);
     _updateCounterInDatabase();
   }
 
+  void _incrementcoldDate() {
+    setState(() => _colDate++);
+    _updatecolDateInDatabase();
+  }
+
   void _getCounterFromDatabase() {
-    var values = db.select('SELECT count_value FROM count;');
-    if (values.isNotEmpty) _counter = values.first['count_value'];
+    var values_count = db.select('SELECT count_value FROM count1;');
+    if (values_count.isNotEmpty) _counter = values_count.first['count_value'];
+  }
+
+  void _getCounterFromData() {
+    var values_colDate = db.select('SELECT colDate_value FROM count1;');
+    if (values_colDate.isNotEmpty) {
+      _colDate = values_colDate.first['colDate_value'];
+    }
   }
 
   void _updateCounterInDatabase() {
-    db.execute('DELETE FROM count;');
-    db.execute('INSERT INTO count (count_value) VALUES ($_counter);');
+    db.execute('DELETE FROM count1;');
+    db.execute('INSERT INTO count1 (count_value) VALUES ($_counter);');
+  }
+
+  void _updatecolDateInDatabase() {
+    db.execute('DELETE FROM count1;');
+    db.execute('INSERT INTO count1 (colDate_value) VALUES ($_colDate);');
   }
 
   @override
   void initState() {
     super.initState();
     _getCounterFromDatabase();
+    _getCounterFromData();
   }
 
   @override
@@ -100,19 +120,37 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'You have pushed the button this many times:',
+              '$_counter',
+              style: Theme.of(context).textTheme.headline4,
             ),
             Text(
-              '$_counter',
+              '$_colDate',
               style: Theme.of(context).textTheme.headline4,
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
+      floatingActionButton: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FloatingActionButton(
+              onPressed: _incrementCounter,
+              tooltip: 'Increment',
+              child: Icon(Icons.add),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: FloatingActionButton(
+              onPressed: _incrementcoldDate,
+              tooltip: 'Increment',
+              child: Icon(Icons.add),
+            ),
+          ),
+        ],
       ),
     );
   }
