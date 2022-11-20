@@ -1,6 +1,3 @@
-/// This example show you how to use the openSQLiteOnWindows function
-///
-/// It also show you how to create your database file and how to execute simple
 /// SQL functions.
 ///
 /// Here the table used have only one column and we use only one row to store
@@ -19,6 +16,8 @@ import 'package:sqlite3/sqlite3.dart';
 import 'package:sqlite3/open.dart';
 import 'package:sqlite3_library_windows/sqlite3_library_windows.dart';
 
+import 'table.dart';
+
 late final Database db;
 
 Future<void> main() async {
@@ -30,15 +29,15 @@ Future<void> main() async {
 
   // If the database file doesn't exist, create it.
   File dbFile =
-      await File("${dbFolder.path}\\sqlite3_library_windows_example\\db")
-          .create(recursive: true);
+  await File("${dbFolder.path}\\sqlite3_library_windows_example\\db")
+      .create(recursive: true);
 
   // Open the database file
   db = sqlite3.open(dbFile.path);
 
   // Create 'count' table if the table doesn't already exist
   db.execute(
-      'CREATE TABLE IF NOT EXISTS count1 (count_value INTEGER, colDate_value INTEGER) ;');
+      'CREATE TABLE IF NOT EXISTS list4 (id INTEGER PRIMARY KEY,name INTEGER NOT NULL, age INTEGER NOT NULL);');
 
   runApp(MyApp());
 }
@@ -66,47 +65,64 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var _counter = 0;
-  var _colDate = 0;
-  TextEditingController descriptionController = TextEditingController();
+  var _id = 0;
+  var _name = 0;
+  var _age = 0;
+  late List<Map<String, dynamic>> _maps;
 
-  void _incrementCounter() {
-    setState(() => _counter++);
+  void _incrementName() {
+    setState(() => _name++);
     _updateCounterInDatabase();
+    _getDatabase();
   }
 
-  void _incrementcoldDate() {
-    setState(() => _colDate++);
-    _updatecolDateInDatabase();
+  void _incrementAge() {
+    setState(() => _age++);
+    _updateCounterInDatabase();
+    _getDatabase();
   }
 
   void _getCounterFromDatabase() {
-    var values_count = db.select('SELECT count_value FROM count1;');
-    if (values_count.isNotEmpty) _counter = values_count.first['count_value'];
+    var values = db.select('SELECT id FROM list4;');
+    if (values.isNotEmpty) _id = values.last['id'];
   }
 
-  void _getCounterFromData() {
-    var values_colDate = db.select('SELECT colDate_value FROM count1;');
-    if (values_colDate.isNotEmpty) {
-      _colDate = values_colDate.first['colDate_value'];
-    }
+  void _getNameFromDatabase() {
+    var values = db.select('SELECT name FROM list4;');
+    if (values.isNotEmpty) _name = values.last['name'];
+  }
+
+  void _getAgeFromDatabase() {
+    var values = db.select('SELECT name FROM list4;');
+    if (values.isNotEmpty) _age = values.last['age'];
   }
 
   void _updateCounterInDatabase() {
-    db.execute('DELETE FROM count1;');
-    db.execute('INSERT INTO count1 (count_value) VALUES ($_counter);');
+    // db.execute('DELETE FROM list;');
+    db.execute('INSERT INTO list4 (name, age) VALUES ($_name, $_age);');
   }
 
-  void _updatecolDateInDatabase() {
-    db.execute('DELETE FROM count1;');
-    db.execute('INSERT INTO count1 (colDate_value) VALUES ($_colDate);');
+  void _getDatabase() {
+    _maps = db.select('SELECT * FROM list4;');
+  }
+
+  void _updateDatabase() {
+    db.execute('UPDATE list4 SET name = name+1 WHERE id = $_id;');
+  }
+
+  void _deleteDatabase() {
+    db.execute('DELETE FROM list4;');
+    _getDatabase();
+    _updateCounterInDatabase();
   }
 
   @override
   void initState() {
     super.initState();
     _getCounterFromDatabase();
-    _getCounterFromData();
+    _getNameFromDatabase();
+    _getAgeFromDatabase();
+    _getDatabase();
   }
 
   @override
@@ -117,38 +133,70 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+          children: [
+            const Text(
+              'You have pushed the button this many times:',
             ),
-            Text(
-              '$_colDate',
-              style: Theme.of(context).textTheme.headline4,
+            Expanded(
+              flex: 1,
+              child: Text(
+                '$_id',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ),
+            Expanded(
+              flex: 1,
+              child: Text(
+                '$_name',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text(
+                '$_age',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+            ),
+            Expanded(
+              flex: 2,
+              child: ListView.builder(
+                  padding: const EdgeInsets.all(20),
+                  itemCount: _maps.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    return Column(
+                      children: [
+                        Text(_maps[index]['id'].toString(),
+                            style: const TextStyle(fontSize: 22)),
+                        Text(_maps[index]['name'].toString(),
+                            style: const TextStyle(fontSize: 22)),
+                        Text(_maps[index]['age'].toString(),
+                            style: const TextStyle(fontSize: 22)),
+                      ],
+                    );
+                  }),
+            ),
+            Expanded(flex: 3, child: TablePage(maps: _maps)),
           ],
         ),
       ),
       floatingActionButton: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: FloatingActionButton(
-              onPressed: _incrementCounter,
-              tooltip: 'Increment',
-              child: Icon(Icons.add),
-            ),
+          FloatingActionButton(
+            onPressed: _incrementAge,
+            tooltip: 'Increment',
+            child: Icon(Icons.add),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: FloatingActionButton(
-              onPressed: _incrementcoldDate,
-              tooltip: 'Increment',
-              child: Icon(Icons.add),
-            ),
+          FloatingActionButton(
+            onPressed: _incrementName,
+            tooltip: 'Increment',
+            child: Icon(Icons.add),
+          ),
+          FloatingActionButton(
+            onPressed: _deleteDatabase,
+            tooltip: 'Increment',
+            child: Icon(Icons.delete),
           ),
         ],
       ),
