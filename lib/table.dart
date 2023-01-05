@@ -96,26 +96,26 @@ class _TablePageState extends State<TablePage> {
       alignment: Alignment.center,
       child: (widget.maps[index]['id'] != null)
           ? TextButton(
-        style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            alignment: Alignment.center,
-            textStyle: const TextStyle(color: Colors.black)),
-        child: Text(
-          widget.maps[index]['id'].toString(),
-          style: const TextStyle(color: Colors.black),
-        ),
-        onPressed: () {
-          Fluttertoast.showToast(
-              msg: "This is Center Short Toast",
-              toastLength: Toast.LENGTH_SHORT,
-              gravity: ToastGravity.CENTER,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.red,
-              textColor: Colors.white,
-              fontSize: 16.0);
-          setState(() {});
-        },
-      )
+              style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  alignment: Alignment.center,
+                  textStyle: const TextStyle(color: Colors.black)),
+              child: Text(
+                widget.maps[index]['id'].toString(),
+                style: const TextStyle(color: Colors.black),
+              ),
+              onPressed: () {
+                Fluttertoast.showToast(
+                    msg: "This is Center Short Toast",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.CENTER,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0);
+                setState(() {});
+              },
+            )
           : const Text('—'),
     );
   }
@@ -128,7 +128,9 @@ class _TablePageState extends State<TablePage> {
           height: 52,
           padding: const EdgeInsets.fromLTRB(5, 0, 0, 0),
           alignment: Alignment.center,
-          child: Text(widget.maps[index]['name'].toString()),
+          child: (widget.maps != null)
+              ? Text(widget.maps[index]['name'].toString())
+              : const Text('null'),
         ),
         Container(
           width: 100,

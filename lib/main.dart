@@ -37,7 +37,7 @@ Future<void> main() async {
 
   // Create 'count' table if the table doesn't already exist
   db.execute(
-      'CREATE TABLE IF NOT EXISTS list4 (id INTEGER PRIMARY KEY,name INTEGER NOT NULL, age INTEGER NOT NULL);');
+      'CREATE TABLE IF NOT EXISTS list6 (id INTEGER PRIMARY KEY,name INTEGER NOT NULL, age INTEGER NOT NULL);');
 
   runApp(MyApp());
 }
@@ -83,35 +83,35 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _getCounterFromDatabase() {
-    var values = db.select('SELECT id FROM list4;');
+    var values = db.select('SELECT id FROM list6;');
     if (values.isNotEmpty) _id = values.last['id'];
   }
 
   void _getNameFromDatabase() {
-    var values = db.select('SELECT name FROM list4;');
+    var values = db.select('SELECT name FROM list6;');
     if (values.isNotEmpty) _name = values.last['name'];
   }
 
   void _getAgeFromDatabase() {
-    var values = db.select('SELECT name FROM list4;');
+    var values = db.select('SELECT age FROM list6;');
     if (values.isNotEmpty) _age = values.last['age'];
   }
 
   void _updateCounterInDatabase() {
     // db.execute('DELETE FROM list;');
-    db.execute('INSERT INTO list4 (name, age) VALUES ($_name, $_age);');
+    db.execute('INSERT INTO list6 (name, age) VALUES ($_name, $_age);');
   }
 
   void _getDatabase() {
-    _maps = db.select('SELECT * FROM list4;');
+    _maps = db.select('SELECT * FROM list6;');
   }
 
   void _updateDatabase() {
-    db.execute('UPDATE list4 SET name = name+1 WHERE id = $_id;');
+    db.execute('UPDATE list6 SET name = name+1 WHERE id = $_id;');
   }
 
   void _deleteDatabase() {
-    db.execute('DELETE FROM list4;');
+    db.execute('DELETE FROM list6;');
     _getDatabase();
     _updateCounterInDatabase();
   }
